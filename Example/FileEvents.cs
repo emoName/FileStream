@@ -20,7 +20,7 @@ namespace FileStream.Example
 
         public void ActivateFileEvents()
         {
-         //   Console.ReadLine();
+            //   Console.ReadLine();
 
             if ( !Directory.Exists(_mainPath) )
             {
@@ -41,7 +41,7 @@ namespace FileStream.Example
                                                   | NotifyFilters.FileName
                                                   | NotifyFilters.DirectoryName
                                                   | NotifyFilters.LastAccess;
-                                                 
+
 
                     inputFileWatcher.Created += FileCrated;
                     inputFileWatcher.Changed += FileChanged;
@@ -88,10 +88,10 @@ namespace FileStream.Example
                 var nn = e.FullPath.Substring(_mainPath.Length);
                 if ( File.Exists(_mirorPath + ss) )
                 {
-                Console.WriteLine(ss + "  " + nn);
-                Directory.Move(_mirorPath + ss, _mirorPath + nn);
-             
-                Console.WriteLine("FileRenamed ");
+                    Console.WriteLine(ss + "  " + nn);
+                    Directory.Move(_mirorPath + ss, _mirorPath + nn);
+
+                    Console.WriteLine("FileRenamed ");
 
                 }
                 else
@@ -107,10 +107,10 @@ namespace FileStream.Example
         private void FileDeleted(object sender, FileSystemEventArgs e)
         {
             Console.WriteLine("Detete");
-            if (  CheckIsDir(_mirorPath+e.FullPath.Substring(_mainPath.Length)) )
+            if ( CheckIsDir(_mirorPath + e.FullPath.Substring(_mainPath.Length)) )
             {
-                var ss = e.FullPath.Substring( _mainPath.Length);
-                Directory.Delete((_mirorPath+ ss), true);
+                var ss = e.FullPath.Substring(_mainPath.Length);
+                Directory.Delete((_mirorPath + ss), true);
                 Console.WriteLine("Directory delated  ");
             }
             else
@@ -118,8 +118,8 @@ namespace FileStream.Example
                 if ( File.Exists(_mirorPath + e.FullPath.Substring(_mainPath.Length)) )
                 {
 
-                File.Delete(_mirorPath + e.FullPath.Substring(_mainPath.Length) );
-                Console.WriteLine("FileDeleted");
+                    File.Delete(_mirorPath + e.FullPath.Substring(_mainPath.Length));
+                    Console.WriteLine("FileDeleted");
                 }
             }
 
@@ -179,40 +179,18 @@ namespace FileStream.Example
         }
         private bool CheckIsDir(string s)
         {
-            if ( File.Exists(s)|| Directory.Exists(s) )
+            if ( File.Exists(s) || Directory.Exists(s) )
             {
 
                 FileAttributes attr = File.GetAttributes(s);
 
                 if ( attr.HasFlag(FileAttributes.Directory) )
                     return true;
-                
-            }
-                return false;
-        }
-
-        private bool CheckForNewDir()
-        {
-
-
-            foreach ( var item in Directory.GetDirectories(_mainPath, "*", SearchOption.AllDirectories) )
-            {
-                var mirrorDir = Directory.GetDirectories(_mirorPath, "*", SearchOption.AllDirectories);
-                if ( !mirrorDir.Contains(item) )
-                {
-                    var vv = item.Substring(0, _mainPath.Length);
-
-                    Directory.CreateDirectory(Path.Combine(_mirorPath, vv));
-                }
-
 
             }
-
-
-
-
-
             return false;
         }
+
+
     }
 }
