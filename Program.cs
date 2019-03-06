@@ -85,7 +85,7 @@ namespace FileStream
                                                                       });
 
             SyncFiles(_mirorPath, _mainPath, mainDir
-                                           , (mirorPath, mainPath, file) =>
+                                           , (mainPath, mirorPath, file) =>
                                                                          {
                                                                              if ( File.Exists(mirorPath + file) )
                                                                              {
