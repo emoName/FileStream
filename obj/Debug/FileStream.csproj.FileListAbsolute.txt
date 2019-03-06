@@ -11,3 +11,4 @@ D:\Amdaris_Curs\FileStream\obj\Debug\FileStream.pdb
 D:\Amdaris_Curs\FileStream\bin\Debug\FileStream.exe.config
 D:\Amdaris_Curs\FileStream\bin\Debug\FileStream.exe
 D:\Amdaris_Curs\FileStream\bin\Debug\FileStream.pdb
+D:\Amdaris_Curs\FileStream\obj\Debug\FileStream.csprojAssemblyReference.cache
