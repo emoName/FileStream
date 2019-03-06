@@ -22,15 +22,18 @@ namespace FileStream
     {
         static void Main(string[] args)
         {
-
-            var _mainPath = @"D:\Amdaris_Curs\FileStream\NewFolder1";
-            var _mirrorPath = @"D:\Amdaris_Curs\FileStream\NewFolder2";
+            string currentDir = Directory.GetCurrentDirectory();
+            var directory = new DirectoryInfo(currentDir).Parent.Parent.FullName.ToString();
+            var _mainPath = directory + @"\NewFolder1";
+            var _mirrorPath = directory + @"\NewFolder2";
 
 
             FileEvents file = new FileEvents(_mainPath, _mirrorPath);
-            //  file.ActivateFileEvents();
 
             CheckForNewDir(_mainPath, _mirrorPath);
+
+            file.ActivateFileEvents();
+
 
             Console.WriteLine("Press any key");
 

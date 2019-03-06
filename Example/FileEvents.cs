@@ -119,7 +119,7 @@ namespace FileStream.Example
                 {
 
                     File.Delete(_mirorPath + e.FullPath.Substring(_mainPath.Length));
-                    Console.WriteLine("FileDeleted");
+                    Console.WriteLine("FileDeleted =  "+e.FullPath);
                 }
             }
 
