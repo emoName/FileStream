@@ -21,7 +21,12 @@ namespace FileStream
     {
         static void Main(string[] args)
         {
-            FileEvents file = new FileEvents(@"D:\FileStream\NewFolder1", @"D:\FileStream\NewFolder2");
+
+            var _mainPath = @"D:\Amdaris_Curs\FileStream\NewFolder1";
+            var _mirrorPath = @"D:\Amdaris_Curs\FileStream\NewFolder2";
+
+
+             FileEvents file = new FileEvents(_mainPath,_mirrorPath);
             file.ActivateFileEvents();
 
 

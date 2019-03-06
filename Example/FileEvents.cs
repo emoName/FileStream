@@ -20,6 +20,7 @@ namespace FileStream.Example
 
         public void ActivateFileEvents()
         {
+         //   Console.ReadLine();
 
             if ( !Directory.Exists(_mainPath) )
             {
@@ -36,11 +37,11 @@ namespace FileStream.Example
                     inputFileWatcher.IncludeSubdirectories = true;
                     inputFileWatcher.InternalBufferSize = 32768;
                     inputFileWatcher.Filter = "*.*";
-                    inputFileWatcher.NotifyFilter = NotifyFilters.LastWrite 
-                                                  | NotifyFilters.FileName 
-                                                  | NotifyFilters.DirectoryName 
-                                                  | NotifyFilters.LastAccess
-                                                  | NotifyFilters.;
+                    inputFileWatcher.NotifyFilter = NotifyFilters.LastWrite
+                                                  | NotifyFilters.FileName
+                                                  | NotifyFilters.DirectoryName
+                                                  | NotifyFilters.LastAccess;
+                                                 
 
                     inputFileWatcher.Created += FileCrated;
                     inputFileWatcher.Changed += FileChanged;
@@ -55,9 +56,9 @@ namespace FileStream.Example
 
                     Console.WriteLine("Press Enter to exit ");
 
-                    Console.ReadLine();
                     //   Program.semaphore.WaitOne();
 
+                    Console.ReadLine();
                 }
 
 
@@ -95,7 +96,7 @@ namespace FileStream.Example
         private void FileDeleted(object sender, FileSystemEventArgs e)
         {
             Console.WriteLine("Detete");
-            if ( ! CheckIsDir(e.FullPath) )
+            if (  CheckIsDir(e.FullPath) )
             {
                 var ss = e.FullPath.Substring( _mainPath.Length);
                 Directory.Delete(_mirorPath+ ss, true);
