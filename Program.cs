@@ -58,6 +58,7 @@ namespace FileStream
                                                     (path, item) =>
                                                     {
                                                         Directory.CreateDirectory(path + item);
+                                                        return false;
                                                     });
             var condition = true;
             do
@@ -65,8 +66,14 @@ namespace FileStream
                 condition = SyncDir(_mirorPath, mirrorDir, mainDir,
                                                           (path, item) =>
                                                           {
+                                                              if ( Directory.Exists(path + item) )
+                                                              {
                                                               Directory.Delete((path + item), true);
-                                                              Console.WriteLine("Directory delated  ");
+                                                              Console.WriteLine($"Directory delated  {path}  {item}");
+                                                                  return true;
+                                                              }else
+                                                              Console.WriteLine($"Directory  {path}  {item}  don't exist ");
+                                                              return false;
                                                           });
 
             } while ( condition );
@@ -141,7 +148,7 @@ namespace FileStream
             }
         }
 
-        private static bool SyncDir(string Path, List<string> mainDir, List<string> mirrorDir, Action<string, string> action)
+        private static bool SyncDir(string Path, List<string> mainDir, List<string> mirrorDir, Func<string, string,bool> action)
         {
             var condition = false;
             foreach ( var item in mainDir )
@@ -149,8 +156,7 @@ namespace FileStream
                 var element = mirrorDir.Where(x => x.Equals(item)).Any();
                 if ( !element )
                 {
-                    condition = true;
-                    action(Path, item);
+                    condition =  action(Path, item);
                 }
                 Console.WriteLine(item + "  =" + element);
 
