@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 //  public static Semaphore semaphore = new Semaphore(0, 2);
 // FileEvents file2 = new FileEvents(@"D:\FileStream\NewFolder2", @"D:\FileStream\NewFolder1");
@@ -68,11 +69,12 @@ namespace FileStream
                                                           {
                                                               if ( Directory.Exists(path + item) )
                                                               {
-                                                              Directory.Delete((path + item), true);
-                                                              Console.WriteLine($"Directory delated  {path}  {item}");
+                                                                  Directory.Delete((path + item), true);
+                                                                  Console.WriteLine($"Directory delated  {path}  {item}");
                                                                   return true;
-                                                              }else
-                                                              Console.WriteLine($"Directory  {path}  {item}  don't exist ");
+                                                              }
+                                                              else
+                                                                  Console.WriteLine($"Directory  {path}  {item}  don't exist ");
                                                               return false;
                                                           });
 
@@ -83,7 +85,7 @@ namespace FileStream
                                          .ToList()
                                          , _mainPath);
 
-            SyncFiles(_mainPath, _mirorPath, mainDir
+            SyncFiles(_mainPath, _mirorPath, mainDir, true
                                             , (mirorPath, mainPath, file) =>
                                                                       {
                                                                           if ( File.Exists(mirorPath + file) )
@@ -94,7 +96,7 @@ namespace FileStream
                                                                               File.Copy(mainPath + file, mirorPath + file);
                                                                       });
 
-            SyncFiles(_mirorPath, _mainPath, mainDir
+            SyncFiles(_mirorPath, _mainPath, mainDir, false
                                            , (mainPath, mirorPath, file) =>
                                                                          {
                                                                              if ( File.Exists(mirorPath + file) )
@@ -111,7 +113,7 @@ namespace FileStream
             return false;
         }
 
-        private static void SyncFiles(string _mainPath, string _mirorPath, List<string> mainDir, Action<string, string, string> action)
+        private static void SyncFiles(string _mainPath, string _mirorPath, List<string> mainDir, bool overide, Action<string, string, string> action)
         {
             List<string> mainFiles;
             List<string> mirorFiles;
@@ -130,6 +132,13 @@ namespace FileStream
                     {
                         action(_mirorPath, _mainPath, file);
                     }
+                    else
+                    {
+                        if ( overide )
+                        {
+                            ReadAndCompareFiles(_mainPath, _mirorPath, file);
+                        }
+                    }
 
                 }
             }
@@ -143,12 +152,80 @@ namespace FileStream
                 if ( !element )
                 {
                     action(_mirorPath, _mainPath, file);
-                }
-
+                } else
+                    {
+                        if ( overide )
+                        {
+                            ReadAndCompareFiles(_mainPath, _mirorPath, file);
+                        }
+                    }
             }
         }
 
-        private static bool SyncDir(string Path, List<string> mainDir, List<string> mirrorDir, Func<string, string,bool> action)
+        private static void ReadAndCompareFiles(string _mainPath, string _mirorPath, string file)
+        {
+            long mainLength = new System.IO.FileInfo(_mainPath + file).Length;
+            long mirroLength = new System.IO.FileInfo(_mirorPath + file).Length;
+
+            if ( mainLength == mirroLength )
+            {
+                // citeste si compara 
+                if ( !CompareFiles(_mainPath + file, _mirorPath + file) )
+                {
+                    File.Copy(_mainPath + file, _mirorPath + file, true);
+                    Console.WriteLine($"{_mainPath + file} overide { _mirorPath + file}  ==============Size===Eqals=========");
+                }
+            }
+            else
+            {
+                // override 
+
+                if ( File.Exists(_mirorPath + file) )
+                {
+                    File.Copy(_mainPath + file, _mirorPath + file, true);
+                    Console.WriteLine($"{_mainPath + file} overide { _mirorPath + file}  =============Size====Diffrent=========");
+                }
+            }
+        }
+
+        private static bool CompareFiles(string a, string b)
+        {
+            bool f = true;
+            if ( File.Exists(a) && File.Exists(b) )
+            {
+                Stream sourceA = File.OpenRead(a);
+                Stream sourceB = File.OpenRead(b);
+
+                try
+                {
+                    byte[] bufferA = new byte[1024 * 1024];
+                    byte[] bufferB = new byte[1024 * 1024];
+                    int bytesRead = 1;
+                    while ( bytesRead > 0 )
+                    {
+                        bytesRead = sourceA.Read(bufferA, 0, bufferA.Length);
+                        sourceB.Read(bufferB, 0, bufferB.Length);
+
+                        if (! bufferA.SequenceEqual(bufferB)  )
+                        {
+                            return false;
+                        }
+                    }
+                }
+                catch ( FileNotFoundException ioEx )
+                {
+                    Console.WriteLine(ioEx.Message);
+                }
+                finally
+                {
+                    sourceA.Close();
+                    sourceB.Close();
+                }
+            }
+            return f;
+        }
+
+        private static bool SyncDir(string Path, List<string> mainDir, List<string> mirrorDir, Func<string, string, bool> action)
         {
             var condition = false;
             foreach ( var item in mainDir )
@@ -156,7 +233,7 @@ namespace FileStream
                 var element = mirrorDir.Where(x => x.Equals(item)).Any();
                 if ( !element )
                 {
-                    condition =  action(Path, item);
+                    condition = action(Path, item);
                 }
                 Console.WriteLine(item + "  =" + element);
 
