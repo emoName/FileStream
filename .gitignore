@@ -1,0 +1,6 @@
+*
+!*.gitignore
+! *.cs
+! Example/
+! NewFolder1/
+! NewFolder2/
